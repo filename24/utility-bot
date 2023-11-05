@@ -50,6 +50,7 @@ export default class EventManager extends BaseManager {
     this.logger.info(`Succesfully loaded events. count: ${this.events.size}`)
 
     this.start()
+    return this.events
   }
 
   private async start() {

@@ -1,6 +1,7 @@
 import { EmbedBuilder, type EmbedData } from 'discord.js'
 import { EmbedType } from '@types'
 import BotClient from '@structures/BotClient'
+import { labels } from '@catppuccin/palette'
 
 export default class Embed extends EmbedBuilder {
   constructor(client: BotClient, type: EmbedType) {
@@ -16,20 +17,15 @@ export default class Embed extends EmbedBuilder {
 
     super(EmbedJSON)
 
-    if (type === 'success') this.setColor('#57F287')
-    else if (type === 'error') this.setColor('#ED4245')
-    else if (type === 'warn') this.setColor('#FEE75C')
-    else if (type === 'info') this.setColor('#5865F2')
-    else if (type === 'default') this.setColor('#5865F2')
-    else this.setColor(type)
+    this.setType(type)
   }
 
   setType(type: EmbedType) {
-    if (type === 'success') this.setColor('#57F287')
-    else if (type === 'error') this.setColor('#ED4245')
-    else if (type === 'warn') this.setColor('#FEE75C')
-    else if (type === 'info') this.setColor('#5865F2')
-    else if (type === 'default') this.setColor('#5865F2')
+    if (type === 'success') this.setColor(labels.green.mocha.hex as '#')
+    else if (type === 'error') this.setColor(labels.red.mocha.hex as '#')
+    else if (type === 'warn') this.setColor(labels.yellow.mocha.hex as '#')
+    else if (type === 'info') this.setColor(labels.blue.mocha.hex as '#')
+    else if (type === 'default') this.setColor(labels.base.mocha.hex as '#')
     else this.setColor(type)
   }
 }

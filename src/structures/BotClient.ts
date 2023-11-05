@@ -1,5 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { Client, ClientOptions, ClientEvents, Collection } from 'discord.js'
+import {
+  Client,
+  ClientOptions,
+  ClientEvents,
+  Collection,
+  ActivityType
+} from 'discord.js'
 import { config as dotenvConfig } from 'dotenv'
 import * as Dokdo from 'dokdo'
 
@@ -16,6 +22,8 @@ import EventManager from '@managers/EventManager'
 import ErrorManager from '@managers/ErrorManager'
 import DatabaseManager from '@managers/DatabaseManager'
 import InteractionManager from '@managers/InteractionManager'
+import { ColorNameHelper } from '@utils/ColorNamer.js'
+import Color from './Color.js'
 
 const logger = new Logger('Bot')
 
@@ -39,9 +47,12 @@ export default class BotClient extends Client {
   public interaction: InteractionManager = new InteractionManager(this)
   public eval = new Dokdo.Client(this, {
     prefix: this.config.bot.prefix,
-    noPerm: async (message) =>
-      message.reply('You do not have permission to use this command.'),
-    aliases: ['eval', 'dok']
+    noPerm: async (message) => message.reply('독도는 대한민국 땅이죠'),
+    aliases: ['eval', 'dok', 'dokdo', '독도'],
+    globalVariable: {
+      ColorName: ColorNameHelper,
+      Color: Color
+    }
   })
 
   public constructor(options: ClientOptions) {
@@ -68,24 +79,12 @@ export default class BotClient extends Client {
     })
   }
 
-  public setStatus(status: 'dev' | 'online' = 'online', name = '점검중...') {
-    if (status.includes('dev')) {
-      logger.warn('Changed status to Developent mode')
-      this.user?.setPresence({
-        activities: [
-          { name: `${this.config.bot.prefix}help | ${this.VERSION} : ${name}` }
-        ],
-        status: 'dnd'
-      })
-    } else if (status.includes('online')) {
-      logger.info('Changed status to Online mode')
+  public setStatus(name = '로봇같이 행동하는 안수찬입니다.') {
+    logger.info('Changed status to Online mode')
 
-      this.user?.setPresence({
-        activities: [
-          { name: `${this.config.bot.prefix}help | ${this.VERSION}` }
-        ],
-        status: 'online'
-      })
-    }
+    return this.user?.setPresence({
+      activities: [{ name: `엙`, type: ActivityType.Custom, state: name }],
+      status: 'online'
+    })
   }
 }

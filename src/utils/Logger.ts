@@ -6,14 +6,14 @@ import { Logger as BaseLogger, ILogObj } from 'tslog'
 import { LevelType } from './Constants.js'
 
 export default class Logger extends BaseLogger<ILogObj> {
-  public stream = createStream(
-    join(dirname(fileURLToPath(import.meta.url)), '../../logs/latest.log'),
-    {
-      size: '10M',
-      interval: '1d',
-      compress: 'gzip'
-    }
-  )
+  // public stream = createStream(
+  //   join(dirname(fileURLToPath(import.meta.url)), '../../logs/latest.log'),
+  //   {
+  //     size: '10M',
+  //     interval: '1d',
+  //     compress: 'gzip'
+  //   }
+  // )
 
   constructor(scope: string) {
     super({
@@ -25,8 +25,8 @@ export default class Logger extends BaseLogger<ILogObj> {
       minLevel: config.logger.dev ? LevelType.Debug : config.logger.level
     })
 
-    this.attachTransport((data) => {
-      this.stream.write(JSON.stringify(data) + '\n')
-    })
+    // this.attachTransport((data) => {
+    //   this.stream.write(JSON.stringify(data) + '\n')
+    // })
   }
 }
