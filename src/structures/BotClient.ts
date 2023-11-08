@@ -55,6 +55,9 @@ export default class BotClient extends Client {
     }
   })
 
+  public answers: Collection<string, { count: number; answer: string }> =
+    new Collection()
+
   public constructor(options: ClientOptions) {
     super(options)
 
