@@ -17,6 +17,7 @@ COPY . /app/
 
 RUN yarn build
 RUN yarn generate
+RUN yarn prisma migrate deploy
 
 RUN rm src/ -rf
 

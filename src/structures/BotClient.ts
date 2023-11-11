@@ -22,8 +22,7 @@ import EventManager from '@managers/EventManager'
 import ErrorManager from '@managers/ErrorManager'
 import DatabaseManager from '@managers/DatabaseManager'
 import InteractionManager from '@managers/InteractionManager'
-import { ColorNameHelper } from '@utils/ColorNamer.js'
-import Color from './Color.js'
+import { Status } from '@utils/Constants.js'
 
 const logger = new Logger('Bot')
 
@@ -31,6 +30,7 @@ export default class BotClient extends Client {
   public readonly VERSION: string
   public readonly BUILD_NUMBER: string
   public readonly config = config
+  public status: Status = Status.Connecting
 
   public commands: Collection<string, BaseCommand> = new Collection()
   public events: Collection<keyof ClientEvents, Event<keyof ClientEvents>> =
@@ -50,13 +50,9 @@ export default class BotClient extends Client {
     noPerm: async (message) => message.reply('독도는 대한민국 땅이죠'),
     aliases: ['eval', 'dok', 'dokdo', '독도'],
     globalVariable: {
-      ColorName: ColorNameHelper,
-      Color: Color
+      Status: Status
     }
   })
-
-  public answers: Collection<string, { count: number; answer: string }> =
-    new Collection()
 
   public constructor(options: ClientOptions) {
     super(options)
@@ -78,6 +74,7 @@ export default class BotClient extends Client {
   public async start(token: string = config.bot.token): Promise<void> {
     logger.info('Logging in bot...')
     await this.login(token).then(() => {
+      this.status = Status.Online
       this.setStatus()
     })
   }

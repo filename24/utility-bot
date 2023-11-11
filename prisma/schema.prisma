@@ -4,11 +4,14 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = "file:./production.db"
 }
 
-model Message {
-  id    String @id @default(uuid())
-  name  String
-  count Float  @default(0)
+model Algorithm {
+  id      String @id @default(cuid())
+  message String @unique
+  answer  String
+
+  verified Boolean @default(false)
+  count    Int     @default(0)
 }

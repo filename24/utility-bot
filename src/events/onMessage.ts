@@ -3,6 +3,7 @@ import CommandManager from '@managers/CommandManager'
 import ErrorManager from '@managers/ErrorManager'
 import { Events, MessagePayload, MessageReplyOptions } from 'discord.js'
 import { randomInt } from 'crypto'
+import { Status } from '@utils/Constants'
 
 export default new Event(Events.MessageCreate, async (client, message) => {
   const commandManager = new CommandManager(client)
@@ -19,6 +20,11 @@ export default new Event(Events.MessageCreate, async (client, message) => {
   const commandName = args.shift()?.toLowerCase()
   const command = commandManager.get(commandName as string)
 
+  if (client.status === Status.Development) return
+
+  if (client.status === Status.Updating)
+    return message.reply('# AI 최적화중...\n나중에 다시 시도해주세요!')
+
   await client.eval.run(message)
 
   if (!CommandManager.isMessageCommand(command)) {
@@ -32,12 +38,33 @@ export default new Event(Events.MessageCreate, async (client, message) => {
         '그럴수도있고 아닐수도있습니다'
       ]
 
-      const oldAnswer = client.answers.get(message.content)
+      let answerData = await client.db.algorithm.findFirst({
+        where: {
+          message: message.content
+        }
+      })
       const answer = answers[randomInt(answers.length)]
 
-      if (randomInt(5) == oldAnswer?.count ?? 0) {
+      if (!answerData) {
+        answerData = await client.db.algorithm.create({
+          data: {
+            answer: answer,
+            count: 0 + 1,
+            message: message.content
+          }
+        })
+      }
+
+      if (!answerData) return
+
+      if (randomInt(7, 10) <= answerData.count && !answerData.verified) {
         setTimeout(
-          () => client.answers.delete(message.content),
+          () =>
+            client.db.algorithm.delete({
+              where: {
+                id: answerData?.id
+              }
+            }),
           1000 * 60 * randomInt(3)
         )
 
@@ -53,12 +80,16 @@ export default new Event(Events.MessageCreate, async (client, message) => {
         return message.reply(data[randomInt(data.length)])
       }
 
-      message.reply(oldAnswer?.answer ?? answer).then(() => {
-        client.answers.set(message.content, {
-          answer: oldAnswer?.answer ?? answer,
-          count: oldAnswer?.count ?? 0 + 1
-        })
+      await client.db.algorithm.update({
+        where: {
+          id: answerData.id
+        },
+        data: {
+          count: answerData.count + 1
+        }
       })
+
+      message.reply(answerData.answer)
     }
 
     return

@@ -24,6 +24,13 @@ export const enum LevelType {
   Fatal
 }
 
+export enum Status {
+  Connecting,
+  Online,
+  Development,
+  Updating
+}
+
 export const ColorName: Record<ColorCodes, string> = {
   COLOR_AQUA: '물색',
   COLOR_BLUE: '파랑색',

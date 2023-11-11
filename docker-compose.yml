@@ -11,3 +11,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - database_data:/app/prisma/dev.db
+volumes:
+  database_data:
