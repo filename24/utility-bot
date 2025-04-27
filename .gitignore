@@ -1,39 +1,31 @@
-# Packages
+# Ignore a blackhole and the folder for development
 node_modules/
-package-lock.json
-
-# Log files
-logs/*
-*.log
-npm-debug.log*
-
-# Runtime data
-pids
-*.pid
-*.seed
-
-# Env
-.env
-config.*
-
-# Miscellaneous
-.tmp/
+.vs/
 .idea/
+*.iml
+
+# Yarn files
+.yarn/install-state.gz
+.yarn/build-state.yml
+
+# Environment variables
 .DS_Store
 
-# Database
-*.sqlite
+dist/
 
-# Build data
-build/
+# Ignore the config file (contains sensitive information such as tokens)
+config.ts
 
-# yarn
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# Ignore heapsnapshot and log files
+*.heapsnapshot
+*.log
 
-prisma/production.db
+# Ignore npm lockfiles file
+package-lock.json
+
+# Environment variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env

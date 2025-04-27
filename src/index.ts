@@ -1,53 +1,33 @@
-import 'dotenv/config'
-import { ShardingManager } from 'discord.js'
-import { setTimeout } from 'timers/promises'
-import { readFileSync } from 'fs'
-import { join } from 'path'
-import config from './config.js'
-import chalk from 'chalk'
-import Logger from '@utils/Logger'
+import './lib/setup.js'
 
-const logger = new Logger('ShardManager')
+import { LogLevel, SapphireClient } from '@sapphire/framework'
+import { GatewayIntentBits } from 'discord.js'
+
+const client = new SapphireClient({
+  defaultPrefix: '수찬아 ',
+  caseInsensitiveCommands: true,
+  logger: {
+    level: LogLevel.Debug
+  },
+  intents: [
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.MessageContent
+  ],
+  loadMessageCommandListeners: true
+})
 
 const main = async () => {
-  console.log(
-    chalk.cyanBright(`
-                    =========================================================
-  
-  
-                                ${config.name}@${config.BUILD_NUMBER}
-                              Version : ${config.BUILD_VERSION}
-  
-  
-                    =========================================================`)
-  )
-
-  if (!config.bot.sharding) {
-    import('./bot')
-  } else {
-    try {
-      if (!readFileSync(join(__dirname, './bot.ts'))) return
-      for (let index = 0; index < 6; index++) {
-        console.log(' ')
-      }
-      logger.warn('Sharding system not supported typescript file')
-      for (let index = 0; index < 6; index++) {
-        console.log(' ')
-      }
-      await setTimeout(1500)
-      import('./bot')
-    } catch (e) {
-      const manager = new ShardingManager(
-        './build/bot.js',
-        config.bot.shardingOptions
-      )
-
-      manager.spawn()
-      manager.on('shardCreate', async (shard) => {
-        logger.info(`Shard #${shard.id} created.`)
-      })
-    }
+  try {
+    client.logger.info('Logging in')
+    await client.login()
+    client.logger.info('logged in')
+  } catch (error) {
+    client.logger.fatal(error)
+    await client.destroy()
+    process.exit(1)
   }
 }
 
-main()
+void main()
